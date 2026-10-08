@@ -159,4 +159,67 @@ API token requests use the documented chained HMAC-SHA256 `bhesignature` authent
 - [Saved query permissions](https://bloodhound.specterops.io/reference/cypher/retrieves-saved-query-permissions-for-provided-query-id)
 - [Public implementation permission checks](https://github.com/SpecterOps/BloodHound/blob/main/cmd/api/src/api/v2/saved_queries.go)
 
+## Example interactive output
 
+This anonymized example shows selecting a user, previewing their public queries, choosing one query to delete, accepting the default backup filename by pressing Enter, and confirming with `DELETE`. Names, email addresses, UUIDs, query IDs, computer names, SIDs, timestamps, and local paths are illustrative. Only the first five of 184 matching queries are shown here; the actual script displays every match.
+
+```text
+.\Remove-BHEPublicQueries.ps1 -EnvFile .\.env
+1. admin | Example Admin | admin@example.com | UUID: 11111111-1111-1111-1111-111111111111
+2. audit_api | Audit Service | audit@example.com | UUID: 22222222-2222-2222-2222-222222222222
+3. demo_user | Demo User | demo@example.com | UUID: 33333333-3333-3333-3333-333333333333
+4. analyst | Example Analyst | analyst@example.com | UUID: 44444444-4444-4444-4444-444444444444
+5. monitoring_api | Monitoring Service | monitoring@example.com | UUID: 55555555-5555-5555-5555-555555555555
+6. test_user | Test User | test@example.com | UUID: 66666666-6666-6666-6666-666666666666
+Select a user number (Q or Enter to cancel): 1
+Selected: admin | UUID: 11111111-1111-1111-1111-111111111111
+Matched 184 public saved queries for owner 11111111-1111-1111-1111-111111111111.
+1. Local Groups on Machine | Query ID: 501
+   Description:
+MATCH p=(c:Computer {name:'WORKSTATION01.EXAMPLE.LOCAL'})<-[:LocalToComputer]-
+(n:ADLocalGroup)-[:MemberOfLocalGroup]-(u:Base)
+RETURN p
+LIMIT 500
+
+2. Local Group expanded | Query ID: 502
+   Description:
+MATCH p=(c:Computer {name:'WORKSTATION01.EXAMPLE.LOCAL'})<-[:LocalToComputer]-
+(n:ADLocalGroup)<-[:MemberOfLocalGroup]-(u:Base)<-[:MemberOf*1..]-(r:Base)
+RETURN p
+LIMIT 500
+
+3. Group Granting local admin on a computer | Query ID: 503
+   Description:
+MATCH p=(g:Group)-[:AdminTo]->(c:Computer)
+WHERE c.objectid = 'S-1-5-21-1111111111-2222222222-3333333333-1103'
+RETURN p
+LIMIT 100
+
+4. User has Admin via Group Membership | Query ID: 504
+   Description:
+MATCH p=(u:User)-[:MemberOf*1..]->(g:Group)-[:AdminTo]->(c:Computer)
+WHERE u.objectid = 'S-1-5-21-1111111111-2222222222-3333333333-500'
+RETURN p
+LIMIT 100
+
+5. Users with Admin on a Computer | Query ID: 505
+   Description:
+MATCH p=(u:User)-[:MemberOf*1..]->(g:Group)-[:AdminTo]->(c:Computer)
+WHERE c.objectid = 'S-1-5-21-1234567890-2345678901-3456789012-1120'
+RETURN p
+LIMIT 100
+
+[The remaining 179 query previews are omitted from this documentation example.]
+
+Delete [S]elected query, [A]ll matching queries, or [Q]uit (default Q): S
+Select a query number (Q or Enter to cancel): 5
+Before deleting, the script saves the selected queries and their sharing details to a JSON backup.
+Press Enter to use this timestamped file in your current folder: .\queries-backup-11111111-1111-1111-1111-111111111111-20261008-120000-123Z.json
+Or enter a different path. The folder must already exist, and the file must not already exist.
+Backup JSON file path (Enter = default, Q = quit without deleting):
+Backup file: C:\Tools\BHEQueries\queries-backup-11111111-1111-1111-1111-111111111111-20261008-120000-123Z.json
+Selected 1 queries for deletion. Owner UUID: 11111111-1111-1111-1111-111111111111
+Type DELETE to confirm this selection (anything else cancels): DELETE
+```
+
+This transcript ends at confirmation. The script next saves the backup and creates the deletion results log, rechecks query 505's ownership, content, and public sharing, and attempts its deletion. It reports the outcome in the console and in `queries-deletion-results-11111111-1111-1111-1111-111111111111-20261008-120000-123Z.jsonl`.
