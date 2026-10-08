@@ -1,6 +1,9 @@
 # Remove public BloodHound Enterprise saved queries by owner
 
-`Remove-BHEPublicQueries.ps1` interactively lists BloodHound users, previews one user's **public saved queries**, and lets you delete one query or all matching queries. Supplying `-OwnerUserId` retains the command-line preview/delete mode. Requires Windows PowerShell 5.1 or PowerShell 7, a tenant URL, and an administrator API token (ID and key). An existing bearer JWT is also supported. Tenant URLs require HTTPS; HTTP is allowed for local loopback addresses such as `localhost`, `127.0.0.1`, and `[::1]`.
+`Remove-BHEPublicQueries.ps1` interactively lists BloodHound users, previews one user's **public saved queries**, and lets you delete one query or all matching queries. Supplying `-OwnerUserId` retains the command-line preview/delete mode. 
+Requires Windows PowerShell 5.1 or PowerShell 7, a tenant URL, and an administrator API token (ID and key). 
+An existing bearer JWT is also supported. 
+Tenant URLs require HTTPS; HTTP is allowed for local loopback addresses such as `localhost`, `127.0.0.1`, and `[::1]`.
 
 Interactive mode obtains users from `GET /api/v2/bloodhound-users` and captures the selected user's **BloodHound application UUID** automatically. It displays every returned user, including disabled accounts, sorted by principal name and UUID. Each numbered entry includes principal name, display name, email, and UUID. UUIDs identify application accounts, not Active Directory/Entra objects.
 
