@@ -68,7 +68,8 @@ The script then:
 6. Offers a timestamped backup JSON filename in the current folder, unless you supplied `-BackupPath`. Press Enter to accept it, enter a different path, or enter Q to quit without deleting.
 7. Requires typing `DELETE` to confirm, then saves the backup and processes the chosen queries.
 
-Enter or Q at either numbered selection, or at the action menu, cancels. At the **backup path prompt**, Enter accepts the default and Q cancels. The default filename is `queries-backup-<owner-UUID>-<UTC timestamp>.json`, for example `queries-backup-11111111-1111-1111-1111-111111111111-20261008-160000-123Z.json`. The script displays the resolved backup path before final confirmation and never overwrites existing files. Invalid selections prompt again. No matches ends the run without a deletion prompt. The selected UUID is retained in memory for the run and written as `owner_user_id` in the backup when deleting; no separate user-selection file is created. The backup covers only the selected query when deleting one query.
+Enter or Q at either numbered selection, or at the action menu, cancels. At the **backup path prompt**, Enter accepts the default and Q cancels. The default filename is `queries-backup-<owner-UUID>-<UTC timestamp>.json`, for example `queries-backup-11111111-1111-1111-1111-111111111111-20261008-160000-123Z.json`. 
+The script displays the resolved backup path before final confirmation and never overwrites existing files. Invalid selections prompt again. No matches ends the run without a deletion prompt. The selected UUID is retained in memory for the run and written as `owner_user_id` in the backup when deleting; no separate user-selection file is created. The backup covers only the selected query when deleting one query.
 
 Interactive mode uses one typed confirmation for the selection; `-Confirm` optionally adds individual PowerShell confirmation prompts. Omitting `-OwnerUserId` selects interactive mode; omit `-Delete` in that mode. For an interactive simulation, use:
 
@@ -158,10 +159,4 @@ API token requests use the documented chained HMAC-SHA256 `bhesignature` authent
 - [Saved query permissions](https://bloodhound.specterops.io/reference/cypher/retrieves-saved-query-permissions-for-provided-query-id)
 - [Public implementation permission checks](https://github.com/SpecterOps/BloodHound/blob/main/cmd/api/src/api/v2/saved_queries.go)
 
-## Offline verification
 
-```powershell
-powershell.exe -NoProfile -File .\tests\Test-RemoveBHEPublicQueries.ps1
-```
-
-Tests mock HTTP completely and leave generated backups/results in `tests/artifacts` for inspection. They do not require credentials or a tenant connection.
