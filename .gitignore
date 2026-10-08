@@ -1,0 +1,7 @@
+tests/artifacts/
+*.results.jsonl
+queries-deletion-results-*.jsonl
+queries-backup*.json
+.env
+.env.*
+!.env.example
